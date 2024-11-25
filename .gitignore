@@ -1,0 +1,10 @@
+errors.txt
+log.txt
+traceback.txt
+*.keystore
+*.rpyc
+*.save
+
+/game/cache/
+/game/saves/
+/.idea/
