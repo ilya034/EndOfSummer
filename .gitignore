@@ -4,6 +4,8 @@ traceback.txt
 *.keystore
 *.rpyc
 *.save
+*.log
+*.rpymc
 
 /game/cache/
 /game/saves/
