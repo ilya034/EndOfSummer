@@ -42,8 +42,8 @@ POST_REPLACES = [
 def parse_raw_file(raw_file):
     parsed_text = ("label start:\n"
                    "$ mc_name = \"Пекус\"\n"
-                   "$ vladimir_name = \"Парень\"\n"
-                   "$ platon_name = \"Парень\"\n"
+                   "$ vladimir_name = \"Какой-то парень\"\n"
+                   "$ platon_name = \"Какой-то парень\"\n"
                    "$ anya_name = \"Какая-то девушка\"\n\n")
 
     raw_lines = open(RAW_FILES_FOLDER + raw_file, "r", encoding="UTF-8").read().strip().split("\n")
@@ -70,7 +70,7 @@ def parse_raw_line(raw_line):
             return parse_music(splitted_line)
 
     except Exception as e:
-        return f"show text \"хуйня: пиздить гей дизайнера за строку: \'{raw_line}\'\nerror: {e}\""
+        return f"show text \"хуйня: \'{raw_line}\'\nerror: {e}\""
 
 
 def parse_char_line(line):
@@ -102,7 +102,7 @@ def parse_char_line(line):
 
 def parse_bg(line):
     bg = line[1].split()[0].lower()
-    return f"show {BGS[bg]}"
+    return f"scene {BGS[bg]}"
 
 
 def parse_sfx(line):

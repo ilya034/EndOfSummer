@@ -1,10 +1,10 @@
 label start:
     $ mc_name = "Пекус"
-    $ vladimir_name = "Парень"
-    $ platon_name = "Парень"
+    $ vladimir_name = "Какой-то парень"
+    $ platon_name = "Какой-то парень"
     $ anya_name = "Какая-то девушка"
 
-    show railway_station
+    scene railway_station
 
     "Железнодорожный вокзал утопал в утреннем свете."
 
@@ -23,7 +23,7 @@ label start:
     show mc
     mc "{thoughts}Да, далековато… Пожалуй, вызову такси.{/thoughts}"
 
-    show black
+    scene black
 
     show text "Спустя 30 минут (Едем на такси)" at truecenter with dissolve
     pause 1
@@ -65,7 +65,7 @@ label start:
     show vladimir
     vladimir "Приятно познакомиться, меня зовут Владимир, можешь звать просто Вовой! Я - председатель ССК №11 Скорее всего, для тебя это сейчас просто какие-то слова… Ну ладно, что-то я заговорил тебя. Тебя-то, кстати, как зовут?"
 
-    $ mc_name = renpy.input()
+    $ mc_name = renpy.input("Введите имя:")
 
     show vladimir
     vladimir "красивое имя, мне нравится! Что ж, добро пожаловать в общежитие №11! Теперь ты - член нашей семьи. А мы семью не бросаем! Ты, кстати, с какого института?"

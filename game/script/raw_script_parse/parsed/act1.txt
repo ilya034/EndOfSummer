@@ -1,7 +1,7 @@
 label start:
     $ mc_name = "Пекус"
-    $ vladimir_name = "Парень"
-    $ platon_name = "Парень"
+    $ vladimir_name = "Какой-то парень"
+    $ platon_name = "Какой-то парень"
     $ anya_name = "Какая-то девушка"
     
     show railway_station
