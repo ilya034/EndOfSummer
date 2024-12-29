@@ -1,5 +1,4 @@
 define mc = Character("[mc_name]", color="#c8ffc8")
-# define mc_thoughts = Character("[mc_name]", color="#a3b0a3", what_prefix="{i}{color=#a3b0a3}", what_suffix="{/color}{/i}")
 define vladimir = Character("[vladimir_name]", color="#c8ffc8")
 define anya = Character("[anya_name]", color="#c8ffc8")
 define andrey = Character("Андрей", color="#c8ffc8")

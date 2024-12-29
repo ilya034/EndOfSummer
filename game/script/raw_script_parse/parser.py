@@ -1,141 +1,130 @@
 import os
 
-RAW_FILES_FOLDER = "raw/"
-PARSED_FILES_FOLDER = "parsed/"
-replace_num = 0
 
-NAMES = {
-    "гг": "mc",
-    "автор": "",
-    "парень": "undef",
-    "какая-то девушка": "undef",
-    "владимир": "vladimir",
-    "андрей": "andrey",
-    "аня": "anya",
-    "платон": "platon"
-}
+class ScriptParser:
+    RAW_FILES_FOLDER = "raw/"
+    PARSED_FILES_FOLDER = "parsed/"
 
-BGS = {
-    "black": "black",
-    "guk": "guk",
-    "радик": "rtf",
-    "collegetown": "collegetown",
-    "dormitorycorridor": "dormitory_corridor",
-    "room": "dormitory_room",
-    "trainstation": "railway_station",
-    "phone1": "phone1",
-    "phone2": "phone2",
-    "phone": "phone",
-    "mirror": "mirror"
-}
+    ACT1_START_STRING = ("label start:\n"
+                         "$ mc_name = \"Пекус\"\n"
+                         "$ vladimir_name = \"Какой-то парень\"\n"
+                         "$ platon_name = \"Какой-то парень\"\n"
+                         "$ anya_name = \"Какая-то девушка\"\n\n")
 
+    NAMES = {
+        "ГГ": "mc",
+        "ГГ (В мыслях)": "mc",
+        "Автор": "",
+        "Какой-то парень": "undef",
+        "Какая-то девушка": "undef",
+        "Владимир": "vladimir",
+        "Андрей": "andrey",
+        "Аня": "anya",
+        "Платон": "platon"
+    }
 
-POST_REPLACES = [
-    "vladimir",
-    "anya",
-    "anya",
-    "platon",
-    "", ""
-]
+    BGS = {
+        "black": "black",
+        "guk": "guk",
+        "rtfoutside": "rtf_outside",
+        "collegetown": "collegetown",
+        "dormitorycorridor": "dormitory_corridor",
+        "room": "dormitory_room",
+        "trainstation": "railway_station",
+        "phone1": "phone1",
+        "phone2": "phone2",
+        "phone": "phone",
+        "mirror": "mirror"
+    }
 
+    def __init__(self):
+        self.replace_index = 0
 
-def parse_raw_file(raw_file):
-    parsed_text = ("label start:\n"
-                   "$ mc_name = \"Пекус\"\n"
-                   "$ vladimir_name = \"Какой-то парень\"\n"
-                   "$ platon_name = \"Какой-то парень\"\n"
-                   "$ anya_name = \"Какая-то девушка\"\n\n")
+    def parse_script(self):
+        for file in os.listdir(self.RAW_FILES_FOLDER):
+            self.parse_file(file)
 
-    raw_lines = open(RAW_FILES_FOLDER + raw_file, "r", encoding="UTF-8").read().strip().split("\n")
-    for line in raw_lines:
-        parsed_line = parse_raw_line(line)
-        if parsed_line is not None:
-            parsed_text += parsed_line + "\n\n"
+    def parse_file(self, file):
+        raw_text = open(self.RAW_FILES_FOLDER + file, "r", encoding="UTF-8").read().strip()
+        raw_lines = raw_text.split("\n")
 
-    return post_parse(parsed_text.strip().replace("\n", "\n    "))
+        parsed_text = self.parse_lines(raw_lines)
 
+        if "act1" in file:
+            parsed_text = self.ACT1_START_STRING + parsed_text
 
-def parse_raw_line(raw_line):
-    splitted_line = list(map(lambda x: x.strip(), raw_line.split(":")))
+        self.write_parsed_file(file, parsed_text)
 
-    try:
-        command = parse_prefix(splitted_line[0])
-        if command in NAMES or len(splitted_line) == 1:
-            return parse_char_line(splitted_line)
-        elif command == "bg":
-            return parse_bg(splitted_line)
-        elif command == "sfx":
-            return parse_sfx(splitted_line)
-        elif command == "m":
-            return parse_music(splitted_line)
+    def parse_lines(self, lines):
+        parsed_lines = []
 
-    except Exception as e:
-        return f"show text \"хуйня: \'{raw_line}\'\nerror: {e}\""
+        for line in lines:
+            if line is None or line.startswith("Сцена"):
+                continue
 
+            splitted_line = list(map(lambda x: x.strip(), line.split(":")))
 
-def parse_char_line(line):
-    global replace_num
-    char = None
-    if len(line) == 2:
-        char = line[0].lower()
+            if len(splitted_line) == 1 or splitted_line[0] in self.NAMES:
+                parsed_lines.append(self.parse_char_line(splitted_line))
+            elif splitted_line[0] == "BG":
+                parsed_lines.append(self.parse_bg(splitted_line[1]))
+            elif splitted_line[0] == "C":
+                parsed_lines.append(self.parse_char_show(splitted_line[1]))
+            else:
+                continue
 
-    text = line[-1].replace("*имя*", "[mc_name]")
+            parsed_lines.append("")
 
-    if char == "автор":
-        line = f"\"{text}\""
-    elif char is not None:
-        name = NAMES[parse_prefix(char)]
-        if name == "undef":
-            name = "replace" + str(replace_num)
-            replace_num += 1
+        return "\n".join(parsed_lines).replace("\n", "\n    ")
 
-        if parse_suffix(char) == "в мыслях":
-            text = "{thoughts}" + text + "{/thoughts}"
+    def write_parsed_file(self, file, text):
+        output = open(self.PARSED_FILES_FOLDER + file, "w", encoding="UTF-8")
+        output.write(text)
+        output.close()
 
-        line = f"show {name}\n{name} \"{text}\""
+    def parse_char_show(self, line):
+        name = str()
+        for n in self.NAMES.values():
+            if len(n) > 1 and line.lower().startswith(n):
+                name = n
+                break
 
-    else:
-        line = f"show text \"{text}\" at truecenter with dissolve\npause 1\nhide text"
+        face = line[len(name)::].lower()
+        if len(face) <= 1:
+            face = "base"
 
-    return line
+        return f"show {name}_{face}\nhide {name}_{face}"
 
+    def parse_char_line(self, line):
+        text = line[-1].replace("*имя персонажа*", "[mc_name]")
 
-def parse_bg(line):
-    bg = line[1].split()[0].lower()
-    return f"scene {BGS[bg]}"
+        if len(line) == 1:
+            return f"show text \"{text}\" at truecenter with dissolve\npause {0.5 * len(text.split())}\nhide text"
+        elif line[0] == "Автор":
+            return f"\"{text}\""
+        else:
+            name = self.NAMES[line[0]]
 
+            if name == "undef":
+                name = "replace" + str(self.replace_index)
+                self.replace_index += 1
 
-def parse_sfx(line):
-    return
+            if "В мыслях" in line[0]:
+                text = "{thoughts}" + text + "{/thoughts}"
 
+            return f"{name} \"{text}\""
 
-def parse_music(line):
-    return
+    def parse_bg(self, line):
+        bg = line.lower()
 
+        if bg not in self.BGS:
+            bg_string = "black"
+        else:
+            bg_string = self.BGS[bg]
 
-def parse_prefix(text):
-    return text.lower().split("(")[0].strip()
-
-
-def parse_suffix(text):
-    text = text.lower().split("(")[1].strip()[:-1] if "(" in text else text
-    return text
-
-
-def post_parse(text):
-    global replace_num
-    for i in range(replace_num):
-        text = text.replace(f"replace{i}", POST_REPLACES[i])
-
-    return text
+        return f"scene {bg_string}"
 
 
-def write_parsed_script(text):
-    output = open(PARSED_FILES_FOLDER + file, "w", encoding="UTF-8")
-    output.write(text)
-    output.close()
-
-
-for file in os.listdir(RAW_FILES_FOLDER):
-    parsed_text = parse_raw_file(file)
-    write_parsed_script(parsed_text)
+if __name__ == "__main__":
+    parser = ScriptParser()
+    parser.parse_script()
