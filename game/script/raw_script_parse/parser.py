@@ -14,6 +14,7 @@ class ScriptParser:
     NAMES = {
         "ГГ": "mc",
         "ГГ (В мыслях)": "mc",
+        "ГГ (в мыслях)": "mc",
         "Автор": "",
         "Какой-то парень": "undef",
         "Какая-то девушка": "undef",
@@ -25,7 +26,7 @@ class ScriptParser:
 
     BGS = {
         "black": "black",
-        "guk": "guk",
+        "gukoutside": "guk_outside",
         "rtfoutside": "rtf_outside",
         "collegetown": "collegetown",
         "dormitorycorridor": "dormitory_corridor",
@@ -96,7 +97,7 @@ class ScriptParser:
         return f"show {name}_{face}\nhide {name}_{face}"
 
     def parse_char_line(self, line):
-        text = line[-1].replace("*имя персонажа*", "[mc_name]")
+        text = line[-1].replace("*имя персонажа*", "[mc_name]").replace("*имя*", "[mc_name]")
 
         if len(line) == 1:
             return f"show text \"{text}\" at truecenter with dissolve\npause {0.5 * len(text.split())}\nhide text"
@@ -109,7 +110,7 @@ class ScriptParser:
                 name = "replace" + str(self.replace_index)
                 self.replace_index += 1
 
-            if "В мыслях" in line[0]:
+            if "в мыслях" in line[0].lower():
                 text = "{thoughts}" + text + "{/thoughts}"
 
             return f"{name} \"{text}\""

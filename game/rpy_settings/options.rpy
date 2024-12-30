@@ -117,7 +117,7 @@ default preferences.afm_time = 11
 ## Этот параметр обычно не должен изменяться, а если и изменился, должен быть
 ## текстовой строчкой, а не выражением.
 
-define config.save_directory = "TheEndOfSummer-1731848519"
+define config.save_directory = "TheEndOfSummer"
 
 
 ## Иконка ######################################################################
