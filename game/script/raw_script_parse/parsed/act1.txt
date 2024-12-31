@@ -119,7 +119,7 @@ scene railway_station
     pause 3.0
     hide text
     
-    scene black
+    scene guk_outside
     
     "Подходя туда, ты замечаешь величественное здание перед собой. Казалось, эти колонны стоят там сотни, нет, тысячи лет."
     
