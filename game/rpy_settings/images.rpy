@@ -1,1 +1,1 @@
-image guk = im.Scale("images/bg/guk.png", 1920, 1080)
+# image guk = im.Scale("images/bg/guk.png", 1920, 1080)
